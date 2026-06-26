@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Unlock Key{% endblock %}
+{% block content %}
+<div class="form-card">
+    <h2>Unlock Private Key</h2>
+    <p class="help-text">Your private key is encrypted at rest. Enter your password to unlock it for this session.</p>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required placeholder="Enter your password" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Unlock Key</button>
+    </form>
+</div>
+{% endblock %}

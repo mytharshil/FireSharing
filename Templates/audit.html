@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Audit Log{% endblock %}
+{% block content %}
+<div class="page-hdr">
+    <div>
+        <h1 class="page-title">Audit Log</h1>
+        <p class="page-sub">All security events and user actions</p>
+    </div>
+</div>
+
+{% if logs %}
+<div class="tbl-wrap">
+<table>
+    <thead><tr>
+        <th>Timestamp</th>
+        <th>User</th>
+        <th>Action</th>
+        <th>Resource</th>
+        <th>Details</th>
+        <th>IP Address</th>
+        <th>Status</th>
+    </tr></thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td class="mute" style="white-space:nowrap">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>{{ log.user.username if log.user else '<system>' }}</td>
+            <td><span class="bdg {{ 'bdg-blu' if 'LOGIN' in log.action or 'REGISTER' in log.action else 'bdg-gry' }}">{{ log.action }}</span></td>
+            <td class="mute">{{ log.resource_type or '-' }}</td>
+            <td>{{ log.details or '-' }}</td>
+            <td class="mute"><code>{{ log.ip_address }}</code></td>
+            <td>{% if log.success %}<span class="bdg bdg-grn">Success</span>{% else %}<span class="bdg bdg-red">Fail</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="empty"><p>No audit log entries yet.</p></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}My Shares{% endblock %}
+{% block head_extra %}
+<meta http-equiv="refresh" content="40">
+{% endblock %}
+{% block content %}
+<div class="page-hdr">
+    <div>
+        <h1 class="page-title">My Shares</h1>
+        <p class="page-sub">Files you have shared with other users</p>
+    </div>
+</div>
+
+<!-- Filter Tabs -->
+<div class="tab-bar">
+    <a href="{{ url_for('my_shares', show='active') }}" class="tab {% if show == 'active' %}tab-active{% endif %}">Active</a>
+    <a href="{{ url_for('my_shares', show='revoked') }}" class="tab {% if show == 'revoked' %}tab-active{% endif %}">Revoked</a>
+    <a href="{{ url_for('my_shares', show='all') }}" class="tab {% if show == 'all' %}tab-active{% endif %}">All</a>
+</div>
+
+{% if shares %}
+<div class="tbl-wrap">
+<table>
+    <thead><tr>
+        <th>File</th>
+        <th>Shared With</th>
+        <th>Status</th>
+        <th>Expires</th>
+        <th>Shared At</th>
+        <th>Actions</th>
+    </tr></thead>
+    <tbody>
+        {% for s in shares %}
+        <tr>
+            <td><a href="{{ url_for('file_info', file_uuid=s.file.uuid) }}" class="fname">{{ s.file.original_name }}</a></td>
+            <td>{{ s.shared_with.username }}</td>
+            <td>
+                {% if s.revoked %}<span class="bdg bdg-red">Revoked</span>
+                {% elif s.is_expired() %}<span class="bdg bdg-red">Expired</span>
+                {% else %}<span class="bdg bdg-grn">Active</span>{% endif %}
+            </td>
+            <td>
+                {% if s.expires_at %}
+                    {{ s.expires_at.strftime('%Y-%m-%d %H:%M') }}
+                {% else %}<span class="mute">Never</span>{% endif %}
+            </td>
+            <td class="mute">{{ s.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>
+                <div class="act">
+                {% if not s.revoked %}
+                <form method="POST" action="{{ url_for('revoke', share_id=s.id) }}" style="display:inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Revoke access for this user?')">Revoke</button>
+                </form>
+                {% else %}<span class="mute">&mdash;</span>{% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="empty">
+    {% if show == 'revoked' %}
+    <p>No revoked shares.</p>
+    {% elif show == 'active' %}
+    <p>No active shares. <a href="{{ url_for('dashboard') }}">Go to your files</a> to share one.</p>
+    {% else %}
+    <p>No shares found. <a href="{{ url_for('dashboard') }}">Go to your files</a> to share one.</p>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
