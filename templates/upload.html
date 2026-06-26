@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Upload File{% endblock %}
+{% block content %}
+<div class="form-card">
+    <h2>Upload File</h2>
+    <p class="help-text">Files are encrypted with AES-256-GCM before upload. Max size: 16 MB.</p>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.file.label }}
+            {{ form.file(class="form-control") }}
+            {% for error in form.file.errors %}<span class="form-error">{{ error }}</span>{% endfor %}
+        </div>
+        {{ form.submit(class="btn btn-primary btn-block") }}
+    </form>
+</div>
+{% endblock %}

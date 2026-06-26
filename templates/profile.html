@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="page-hdr">
+    <div>
+        <h1 class="page-title">My Profile</h1>
+        <p class="page-sub">Account security and settings</p>
+    </div>
+</div>
+
+<div class="tbl-wrap" style="padding:16px">
+<table class="detail-tbl">
+    <tr><td class="lbl">Username</td><td>{{ current_user.username }}</td></tr>
+    <tr><td class="lbl">Email</td><td>{{ current_user.email }}</td></tr>
+    <tr><td class="lbl">Joined</td><td>{{ current_user.created_at.strftime('%Y-%m-%d %H:%M') }}</td></tr>
+    <tr><td class="lbl">Last Login</td><td>{{ current_user.last_login.strftime('%Y-%m-%d %H:%M') if current_user.last_login else 'N/A' }}</td></tr>
+    <tr><td class="lbl">Private Key</td><td>{% if has_private_key %}<span class="bdg bdg-grn">Unlocked</span>{% else %}<span class="bdg bdg-red">Locked</span>{% endif %}</td></tr>
+</table>
+</div>
+
+<div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
+    {% if not has_private_key %}
+        <a href="{{ url_for('unlock') }}" class="btn btn-primary">Unlock Private Key</a>
+    {% endif %}
+    <a href="{{ url_for('change_password') }}" class="btn btn-secondary">Change Password</a>
+    <a href="{{ url_for('delete_account') }}" class="btn btn-danger">Delete Account</a>
+</div>
+{% endblock %}

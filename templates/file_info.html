@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}File Details{% endblock %}
+{% block content %}
+<div class="page-hdr">
+    <div>
+        <h1 class="page-title">{{ file.original_name }}</h1>
+        <p class="page-sub">File details and operations</p>
+    </div>
+    <div class="btn-group" style="margin-top:0">
+        {% if has_private_key %}
+            <a href="{{ url_for('download', file_uuid=file.uuid) }}" class="btn btn-primary">Download</a>
+        {% endif %}
+        {% if is_owner %}
+            <a href="{{ url_for('share', file_uuid=file.uuid) }}" class="btn btn-secondary">Share</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="tbl-wrap" style="padding:16px">
+<table class="detail-tbl">
+    <tr><td class="lbl">UUID</td><td><code>{{ file.uuid }}</code></td></tr>
+    <tr><td class="lbl">Original Name</td><td>{{ file.original_name }}</td></tr>
+    <tr><td class="lbl">File Size</td><td>{{ "{:,.0f}".format(file.file_size / 1024) }} KB</td></tr>
+    <tr><td class="lbl">MIME Type</td><td><span class="bdg bdg-mime">{{ file.mime_type }}</span></td></tr>
+    <tr><td class="lbl">File Hash (SHA-256)</td><td><code>{{ file.file_hash }}</code></td></tr>
+    <tr><td class="lbl">Expires At</td>
+        <td>{% if file.expires_at %}{{ file.expires_at.strftime('%Y-%m-%d %H:%M') }}{% else %}<span class="mute">Never</span>{% endif %}</td></tr>
+    <tr><td class="lbl">Uploaded At</td><td>{{ file.created_at.strftime('%Y-%m-%d %H:%M') }}</td></tr>
+    <tr><td class="lbl">Owner</td><td>{{ file.owner.username }}</td></tr>
+    <tr><td class="lbl">Download Count</td><td>{{ file.download_count }}</td></tr>
+</table>
+</div>
+
+{% if is_owner and file.shares %}
+<h2 class="section-title" style="margin-top:24px">Shared Access</h2>
+<div class="tbl-wrap">
+<table>
+    <thead><tr>
+        <th>Shared With</th>
+        <th>Status</th>
+        <th>Expires</th>
+        <th>Shared At</th>
+        <th>Actions</th>
+    </tr></thead>
+    <tbody>
+        {% for s in file.shares %}
+        <tr>
+            <td>{{ s.shared_with.username }}</td>
+            <td>
+                {% if s.revoked %}<span class="bdg bdg-red">Revoked</span>
+                {% elif s.is_expired() %}<span class="bdg bdg-red">Expired</span>
+                {% else %}<span class="bdg bdg-grn">Active</span>{% endif %}
+            </td>
+            <td>{% if s.expires_at %}{{ s.expires_at.strftime('%Y-%m-%d %H:%M') }}{% else %}<span class="mute">Never</span>{% endif %}</td>
+            <td class="mute">{{ s.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>
+                {% if not s.revoked %}
+                <form method="POST" action="{{ url_for('revoke', share_id=s.id) }}" style="display:inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Revoke this share?')">Revoke</button>
+                </form>
+                {% else %}<span class="mute">&mdash;</span>{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="hero">
+    <h1>Firesharing</h1>
+    <p class="hero-sub">End-to-end encrypted &middot; Cryptographically signed &middot; Zero-knowledge architecture</p>
+    <div class="hero-actions">
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        <a href="{{ url_for('upload') }}" class="btn btn-secondary btn-lg">Upload File</a>
+        {% else %}
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Get Started</a>
+        <a href="{{ url_for('login') }}" class="btn btn-secondary btn-lg">Sign In</a>
+        {% endif %}
+    </div>
+</div>
+<div class="features">
+    <div class="feature-card">
+        <div class="f-icon">&#9670;</div>
+        <h3>AES-256-GCM Encryption</h3>
+        <p>Files encrypted before upload with authenticated encryption. Only intended recipients can decrypt.</p>
+    </div>
+    <div class="feature-card">
+        <div class="f-icon">&#9671;</div>
+        <h3>RSA-2048 Key Exchange</h3>
+        <p>Each user has a unique RSA key pair. Private keys are encrypted at rest with your password.</p>
+    </div>
+    <div class="feature-card">
+        <div class="f-icon">&#10003;</div>
+        <h3>Digital Signatures</h3>
+        <p>Files are signed on upload and verified on download to guarantee authenticity and integrity.</p>
+    </div>
+    <div class="feature-card">
+        <div class="f-icon">&#9776;</div>
+        <h3>Audit Logging</h3>
+        <p>Every action logged with timestamp, IP address, and user agent for full accountability.</p>
+    </div>
+    <div class="feature-card">
+        <div class="f-icon">&#9729;</div>
+        <h3>Security Hardened</h3>
+        <p>CSRF protection, rate limiting, account lockout, security headers, and CSP enforced.</p>
+    </div>
+    <div class="feature-card">
+        <div class="f-icon">&#9201;</div>
+        <h3>Share with Expiry</h3>
+        <p>Set time-limited access for shared files. Permissions automatically revoke on expiry.</p>
+    </div>
+</div>
+{% endblock %}
